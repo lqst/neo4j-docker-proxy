@@ -1,7 +1,8 @@
-FROM envoyproxy/envoy:dev
-COPY envoy.yaml /etc/envoy/envoy.yaml
-RUN chmod go+r /etc/envoy/envoy.yaml
-RUN mkdir /certs
-COPY server.crt /certs/server.crt
-COPY server.key /certs/server.key
-RUN chmod go+r /certs/server.crt && chmod go+r /certs/server.key
+FROM nginx:alpine
+WORKDIR /app
+COPY dist.tgz ./
+RUN tar -xvzf dist.tgz
+RUN chown -R nginx:nginx apps
+RUN cp -r apps/nx/dist/. /usr/share/nginx/html/.
+COPY --chown=nginx:nginx server.crt /etc/ssl/certs/server.crt
+COPY --chown=nginx:nginx server.key /etc/ssl/private/server.key
