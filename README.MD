@@ -4,6 +4,18 @@ Using nginx for docker as a reverse proxy for the neo4j bolt protocol
 Pre-requesites: Aura Enterprise with Private Link Enabled
 Why: This allows you to use your own ssl cert and domain name for the aura database
 
+Aura Support also needs to assist with setting:
+```params
+dbms.routing.default_router=SERVER
+```
+
+You can verify this setting with:
+```cypher
+call dbms.listConfig() yield name, value, dynamic
+where name contains "routing"
+return name, value, dynamic
+```
+
 ## How to
 
 ### 1. Cert
