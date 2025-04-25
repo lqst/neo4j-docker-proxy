@@ -57,6 +57,12 @@ docker build -t aura-proxy:v1 ./
 docker run --rm --name aura-proxy -d -v ./default.conf:/etc/nginx/nginx.conf -p 443:443 aura-proxy:v1
 ```
 
+Using aura query api on port 443 instead of bolt 
+```sh
+docker run --rm --name aura-proxy -d -v ./queryapi.conf:/etc/nginx/nginx.conf -p 443:443 aura-proxy:v1
+```
+
+
 ### 5. Test
 Test that you cann connect to the database
 ```sh
@@ -67,8 +73,31 @@ Test that you cann connect to the database
 ## Tips and tricks
 - You may want to test, step by step with nc to check that you pass each layer
 - dnsmasq is your friend for testing / resolving the fake domain (in this example haklof.corp)
+- Trust your self signed cert :) 
+
+```sh
+# Check dns resolution
+dscacheutil -q host -a name database.haklof.corp
+
+# Cler cache 
+sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+
+# Start dns masc
+brew services start dnsmasq
 
 
+# Resolver
+cat /etc/resolver/corp
+nameserver 127.0.0.1
+port 5354
+
+# Conf
+sudo nano $(brew --prefix)/etc/dnsmasq.conf
+
+address=/.corp/127.0.0.1
+port=5354
+
+```
 
 # Todo
 - [ ] Tidy up docker related stuff that may pose scrutity risks  
